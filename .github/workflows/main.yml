@@ -1,0 +1,173 @@
+name: Build and Push Docker images
+
+env:
+  DOTNET_VERSION: '7.0.x'
+
+on:
+  workflow_dispatch:
+    inputs:
+      BRANCH_NAME:
+        required: true
+        description: "Branch name"
+      IMAGE_NAME:
+        required: true
+        description: "Image name"
+
+jobs:
+  push-instagram69bot-image:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.IMAGE_NAME == 'bot' || github.event.inputs.IMAGE_NAME == 'all'}}
+    permissions:
+      packages: write
+      contents: read
+    defaults:
+      run:
+        working-directory: './Instagram69Bot'
+        shell: bash
+    steps:
+      - name: Checkout requested branch
+        uses: actions/checkout@main
+        with:
+          ref:  ${{ env.BRANCH }}
+        env:
+          BRANCH: ${{ inputs.BRANCH_NAME }}
+
+      - name: 'Login to GitHub Container Registry'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 'Build and push Instagram69bot Image'
+        run: |
+          docker build . --tag ghcr.io/its-kaktos/instagram69bot:"$IMAGE_VERSION"
+          docker push ghcr.io/its-kaktos/instagram69bot:"$IMAGE_VERSION"
+        env:
+          IMAGE_VERSION: ${{ inputs.BRANCH_NAME }}.${{ github.run_id }}
+
+  push-instagram69Downloader-image:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.IMAGE_NAME == 'downloader' || github.event.inputs.IMAGE_NAME == 'all' }}
+    permissions:
+      packages: write
+      contents: read
+    defaults:
+      run:
+        working-directory: './Instagram69bot.Downloader'
+        shell: bash
+    steps:
+      - name: Checkout requested branch
+        uses: actions/checkout@main
+        with:
+          ref:  ${{ env.BRANCH }}
+        env:
+          BRANCH: ${{ inputs.BRANCH_NAME }}
+
+      - name: 'Login to GitHub Container Registry'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 'Build and push Instagram69bot downloader Image'
+        run: |
+          docker build . --tag ghcr.io/its-kaktos/instagram69bot-downloader:"$IMAGE_VERSION"
+          docker push ghcr.io/its-kaktos/instagram69bot-downloader:"$IMAGE_VERSION"
+        env:
+          IMAGE_VERSION: ${{ inputs.BRANCH_NAME }}.${{ github.run_id }}
+
+  push-web-image:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.IMAGE_NAME == 'web' }}
+    permissions:
+      packages: write
+      contents: read
+    defaults:
+      run:
+        working-directory: './TelegramBots.Web'
+        shell: bash
+    steps:
+      - name: Checkout requested branch
+        uses: actions/checkout@main
+        with:
+          ref:  ${{ env.BRANCH }}
+        env:
+          BRANCH: ${{ inputs.BRANCH_NAME }}
+
+      - name: 'Login to GitHub Container Registry'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 'Build and push TelegramBots.Web Image'
+        run: |
+          docker build . --tag ghcr.io/its-kaktos/telegrambots-web:"$IMAGE_VERSION"
+          docker push ghcr.io/its-kaktos/telegrambots-web:"$IMAGE_VERSION"
+        env:
+          IMAGE_VERSION: ${{ inputs.BRANCH_NAME }}.${{ github.run_id }}
+  push-message-sender:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.IMAGE_NAME == 'message sender' || github.event.inputs.IMAGE_NAME == 'all' }}
+    permissions:
+      packages: write
+      contents: read
+    defaults:
+      run:
+        working-directory: './TelegramBots.MessageSender'
+        shell: bash
+    steps:
+      - name: Checkout requested branch
+        uses: actions/checkout@main
+        with:
+          ref:  ${{ env.BRANCH }}
+        env:
+          BRANCH: ${{ inputs.BRANCH_NAME }}
+
+      - name: 'Login to GitHub Container Registry'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 'Build and push TelegramBots.MessageSender Image'
+        run: |
+          docker build . --tag ghcr.io/its-kaktos/telegrambots-message-sender:"$IMAGE_VERSION"
+          docker push ghcr.io/its-kaktos/telegrambots-message-sender:"$IMAGE_VERSION"
+        env:
+          IMAGE_VERSION: ${{ inputs.BRANCH_NAME }}.${{ github.run_id }}
+  push-youtube69bot-image:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.IMAGE_NAME == 'ytbot' || github.event.inputs.IMAGE_NAME == 'all'}}
+    permissions:
+      packages: write
+      contents: read
+    defaults:
+      run:
+        working-directory: './src/Youtube69bot/'
+        shell: bash
+    steps:
+      - name: Checkout requested branch
+        uses: actions/checkout@main
+        with:
+          ref:  ${{ env.BRANCH }}
+        env:
+          BRANCH: ${{ inputs.BRANCH_NAME }}
+
+      - name: 'Login to GitHub Container Registry'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 'Build and push youtube69bot Image'
+        run: |
+          docker build . --tag ghcr.io/its-kaktos/youtube69bot:"$IMAGE_VERSION"
+          docker push ghcr.io/its-kaktos/youtube69bot:"$IMAGE_VERSION"
+        env:
+          IMAGE_VERSION: ${{ inputs.BRANCH_NAME }}.${{ github.run_id }}

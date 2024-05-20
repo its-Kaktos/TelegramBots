@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  telegram-local:
+    image: ghcr.io/bots-house/docker-telegram-bot-api:latest
+    environment:
+      # get this values from https://core.telegram.org/api/obtaining_api_id
+      TELEGRAM_API_ID: APIID
+      TELEGRAM_API_HASH: APIHASH
+    command:
+      # set working directory for files
+      - --dir=/var/lib/telegram-bot-api
+      # enable logging, disable in production
+      #- --verbosity=10
+      - --local
+    volumes:
+      # mount volume for persistance of files
+      - /home/kaktos/telegram-local/server-data:/var/lib/telegram-bot-api
+      # Save video and thumbnail of instagram downloader bot
+      - /home/kaktos/volumes/shared/saved-thumbnails/:/tmp/saved-thumbnails/
+    ports:
+      # access the API on 8081 port
+      - 8081:8081
+    networks:
+      - base-docker-files_insta69
+
+networks:
+  base-docker-files_insta69:
+    external: true

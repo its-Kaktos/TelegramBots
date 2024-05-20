@@ -1,0 +1,132 @@
+version: "3.8"
+
+services:
+  instagram69-bot:
+    image: ghcr.io/its-kaktos/instagram69bot:add-youtube-bot.7463673078
+    restart: always
+    environment:
+      - Serilog__Properties__ApplicationVersion=add-youtube-bot.7463673078
+      - BotConfiguration__BotToken=TOKEN
+      - BotConfiguration__BaseUrl=http://telegram-local:8081
+      - ConnectionStrings__mssql=Server=mssql,1433;Database=Instagram69bot;User Id=SA;Password=PASSWORD;TrustServerCertificate=true;
+      - ConnectionStrings__Instagram69BotMetrics=Server=mssql,1433;Database=Instagram69BotMetrics;User Id=SA;Password=PASSWORD;TrustServerCertificate=true;
+      - DOTNET_ENVIRONMENT=Production
+      - RabbitMqConfig_DownloadInstagramEvent__AppId=instagram69_telegram_bot
+      - RabbitMqConfig_DownloadInstagramEvent__ExchangeName=instagram69_link_resolver_events
+      - RabbitMqConfig_DownloadInstagramEvent__QueueName=instagram69_link_resolver_queue
+      - RabbitMqConfig_DownloadInstagramEvent__RoutingKey=instagram69_link_resolver
+      - RabbitMqConfig_TelegramMessageEvent__AppId=instagram69_telegram_bot
+      - RabbitMqConfig_TelegramMessageEvent__ExchangeName=telegram_message_sender_events
+      - RabbitMqConfig_TelegramMessageEvent__QueueName=telegram_message_sender_queue
+      - RabbitMqConfig_TelegramMessageEvent__RoutingKey=telegram_message_sender_key
+      - RabbitMqServerConfig__ConsumerDispatchConcurrency=10
+      - RabbitMqServerConfig__HostName=rabbitmq
+      - RabbitMqServerConfig__UserName=kaktos
+      - RabbitMqServerConfig__Password=PASSWORD
+      - RabbitMqServerConfig__Port=5672
+      - Serilog__WriteTo__Seq__Args__serverUrl=http://seq:5341
+    networks:
+      - base-docker-files_insta69
+  
+  instagram69-downloader:
+    image: ghcr.io/its-kaktos/instagram69bot-downloader:add-youtube-bot.7453734940
+    restart: always
+    networks:
+      - base-docker-files_insta69
+    environment:
+      - Serilog__Properties__ApplicationVersion=add-youtube-bot.7453734940
+      - BotConfiguration__BotToken=TOKEN
+      - BotConfiguration__BaseUrl=http://telegram-local:8081
+      - DOTNET_ENVIRONMENT=Production
+      - ConnectionStrings__MTProto=Server=mssql,1433;Database=TelegramMTProto;User Id=SA;Password=PASSWORD;TrustServerCertificate=true;
+      - ConnectionStrings__Instagram69BotMetrics=Server=mssql,1433;Database=Instagram69BotMetrics;User Id=SA;Password=PASSWORD;TrustServerCertificate=true;MultipleActiveResultSets=True;
+      - MTProto__api_id=API ID
+      - MTProto__api_hash=API HASH
+      - MTProto__phone_number=+PHONE NUMBER
+      - RabbitMqConfig_LinkResolverEvent__AppId=instagram69_downloader
+      - RabbitMqConfig_LinkResolverEvent__ExchangeName=instagram69_dl_events
+      - RabbitMqConfig_LinkResolverEvent__QueueName=instagram69_dl_queue
+      - RabbitMqConfig_LinkResolverEvent__RoutingKey=instagram69_dl
+      - RabbitMqConfig_TelegramMessageEvent__AppId=instagram69_downloader
+      - RabbitMqConfig_TelegramMessageEvent__ExchangeName=telegram_message_sender_events
+      - RabbitMqConfig_TelegramMessageEvent__QueueName=telegram_message_sender_queue
+      - RabbitMqConfig_TelegramMessageEvent__RoutingKey=telegram_message_sender_key
+      - RabbitMqServerConfig__HostName=rabbitmq
+      - RabbitMqServerConfig__UserName=kaktos
+      - RabbitMqServerConfig__Password=PASSWORD
+      - RabbitMqServerConfig__Port=5672
+      - RabbitMqServerConfig__ConsumerDispatchConcurrency=10
+      - Serilog__WriteTo__Seq__Args__serverUrl=http://seq:5341
+    volumes:
+      - /home/kaktos/volumes/shared/saved-thumbnails/:/tmp/saved-thumbnails/
+    depends_on:
+      link-resolver-instagram69-website-1:
+        condition: service_started
+
+  link-resolver-instagram69-website-1:
+    image: ghcr.io/its-kaktos/instagram69-link-resolver-website:master.7453606053
+    restart: always
+    environment:
+      - application_version=master.7453606053
+      - application_name=link-resolver-instagram69-website
+      - INSTAGRAM_USERNAME=USERNAME
+      - INSTAGRAM_PASSWORD=PASS
+      - USE_INSTAGRAMAPI=False
+      - MSSQL_DRIVER=FreeTDS
+      - MSSQL_SERVER=mssql,1433
+      - MSSQL_PROXY_DATABASE=Proxies
+      - MSSQL_INSTAGRAM_API_DATABASE=InstagramApi
+      - MSSQL_USERNAME=SA
+      - MSSQL_PASSWORD=PASSWORD
+      - seq_url_port=http://seq:5341
+      - publisher_exchange_name=instagram69_dl_events
+      - publisher_routing_key=instagram69_dl
+      - publisher_queue_name=instagram69_dl_queue
+      - consumer_exchange_name=instagram69_link_resolver_events
+      - consumer_routing_key=instagram69_link_resolver
+      - consumer_queue_name=instagram69_link_resolver_queue
+      - rabbit_host=rabbitmq
+      - rabbit_username=kaktos
+      - rabbit_password=PASSWORD
+      - rabbit_port=5672
+    networks:
+      - base-docker-files_insta69
+    depends_on:
+      instagram69-bot:
+        condition: service_started
+
+  link-resolver-instagram69-website-2:
+    image: ghcr.io/its-kaktos/instagram69-link-resolver-website:master.7453606053
+    restart: always
+    environment:
+      - application_version=master.7453606053
+      - application_name=link-resolver-instagram69-website-2
+      - INSTAGRAM_USERNAME=mohsennouri692
+      - INSTAGRAM_PASSWORD=PASS
+      - USE_INSTAGRAMAPI=False
+      - MSSQL_DRIVER=FreeTDS
+      - MSSQL_SERVER=mssql,1433
+      - MSSQL_PROXY_DATABASE=Proxies
+      - MSSQL_INSTAGRAM_API_DATABASE=InstagramApi
+      - MSSQL_USERNAME=SA
+      - MSSQL_PASSWORD=PASSWORD
+      - seq_url_port=http://seq:5341
+      - publisher_exchange_name=instagram69_dl_events
+      - publisher_routing_key=instagram69_dl
+      - publisher_queue_name=instagram69_dl_queue
+      - consumer_exchange_name=instagram69_link_resolver_events
+      - consumer_routing_key=instagram69_link_resolver
+      - consumer_queue_name=instagram69_link_resolver_queue
+      - rabbit_host=rabbitmq
+      - rabbit_username=kaktos
+      - rabbit_password=PASSWORD
+      - rabbit_port=5672
+    networks:
+      - base-docker-files_insta69
+    depends_on:
+      instagram69-bot:
+        condition: service_started
+
+networks:
+  base-docker-files_insta69:
+    external: true

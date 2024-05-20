@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  TelegramBots-web:
+    image: ghcr.io/its-kaktos/telegrambots-web:dev.7196908872
+    restart: always
+    environment:
+      - Serilog__Properties__ApplicationVersion=dev.7196908872
+      - ConnectionStrings__mssql=Server=mssql,1433;Database=TelegramBotsWeb;User Id=SA;Password=PASSWORD;TrustServerCertificate=true;
+      - ConnectionStrings__Instagram69bot=Server=mssql,1433;Database=Instagram69bot;User Id=SA;Password=PASSWORD;TrustServerCertificate=true;
+      - ConnectionStrings__Instagram69BotMetrics=Server=mssql,1433;Database=Instagram69BotMetrics;User Id=SA;Password=PASSWORD;TrustServerCertificate=true;
+      - DOTNET_ENVIRONMENT=Production
+      - Serilog__WriteTo__Seq__Args__serverUrl=http://seq:5341
+    ports:
+      - "9092:80"
+      - "9093:443"
+    networks:
+      - base-docker-files_insta69
+
+networks:
+  base-docker-files_insta69:
+    external: true

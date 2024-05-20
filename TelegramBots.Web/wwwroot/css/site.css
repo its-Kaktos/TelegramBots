@@ -1,0 +1,75 @@
+html {
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
+}
+
+@font-face {
+    font-family: IRANSans;
+    font-style: normal;
+    font-weight: normal;
+    src: url("../Site/fonts/Yekan.eot");
+    src: url("../Site/fonts/Yekan.eot?#iefix") format("embedded-opentype"), url("../Site/fonts/Yekan.woff") format("woff"), url("../Site/fonts/Yekan.ttf") format("truetype");
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.chart-container {
+    position: relative;
+    /*height: 40vh;*/
+    /*width: 80vw;*/
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+body {
+    margin-bottom: 60px;
+}
+
+.menu-container {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    background-color: #f2f2f2;
+    width: 200px;
+    height: 100%;
+    padding: 10px;
+}
+
+.menu-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.menu-item {
+    margin-left: 10px;
+    font-size: 18px;
+    color: #333;
+    text-decoration: none;
+}
+
+.menu-item:hover {
+    color: #666;
+}
+
+.content {
+    flex: 1;
+    padding: 10px;
+    background-color: #fff;
+    height: 100%;
+}

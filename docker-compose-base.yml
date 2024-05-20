@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  mssql:
+    networks:
+      - insta69
+    user: root
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: PASSWORD
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: always
+    ports:
+      - "1433:1433"
+    volumes:
+      - /var/opt/mssql/secrets:/var/opt/mssql/secrets
+      - /var/opt/mssql/log:/var/opt/mssql/log
+      - /var/opt/mssql/data:/var/opt/mssql/data
+      - /home/kaktos/docker-backups/mssql:/var/opt/mssql/backups
+    healthcheck:
+      test: [ "CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P PASSWORD -Q 'SELECT 1' || exit 1" ]
+      interval: 10s
+      retries: 10
+      start_period: 10s
+      timeout: 3s
+
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    restart: always
+    networks:
+      - insta69
+    ports:
+      - "3472:15672"
+    #      - "5672:5672"
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "rabbit", "5672" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    environment:
+      - RABBITMQ_DEFAULT_USER=kaktos
+      - RABBITMQ_DEFAULT_PASS=PASSWORD
+  
+  seq:
+    image: datalust/seq:latest
+    restart: always
+    volumes:
+      - /var/opt/seq/data:/data
+    environment:
+      - ACCEPT_EULA=Y
+    networks:
+      - insta69
+    ports:
+      - "5056:80"
+    # - "5341:5341"
+
+networks:
+  insta69:
+    driver: bridge

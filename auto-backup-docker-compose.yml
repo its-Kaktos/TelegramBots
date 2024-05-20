@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  auto-backup:
+    image: armanhmpr/auto-backup:0.0.2
+    restart: always
+    networks:
+      - base-docker-files_insta69
+    environment:
+      - COPY_BACKUPS=True
+#      - BACKUP_CRON=0 /12 * *
+      - BACKUP_CRON=*/2 * * * *
+      - MSSQL_HOST=mssql
+      - MSSQL_USERNAME=sa
+      - MSSQL_PASSWORD=PASSWORD
+    volumes:
+      - /home/kaktos/backups:/backup-copy
+networks:
+  base-docker-files_insta69:
+    external: true

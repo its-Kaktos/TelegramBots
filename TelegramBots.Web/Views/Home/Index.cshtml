@@ -1,0 +1,235 @@
+﻿@{
+    ViewData["Title"] = "نمودار ها";
+}
+<div class="menu-container">
+    <div class="content container overflow-auto">
+
+        <div class="chart-container">
+            <canvas id="user-usages-bot"></canvas>
+        </div>
+        <br/>
+        <hr/>
+
+        <div class="chart-container">
+            <canvas id="users-joined-bot"></canvas>
+        </div>
+        <br/>
+        <hr/>
+
+        <div class="chart-container">
+            <canvas id="users-joined-channels"></canvas>
+        </div>
+        <br/>
+        <hr/>
+
+        <div class="chart-container">
+            <canvas id="users-blocked-bot"></canvas>
+        </div>
+        <br/>
+        <hr/>
+
+        <div class="chart-container">
+            <canvas id="users-unblocked-bot"></canvas>
+        </div>
+        <br/>
+        <hr/>
+
+
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="~/js/chart.js" asp-append-version="true"></script>
+    <script>
+        fetch("/UsersChart/GetUserUsagesPerDay/")
+            .then(response => response.json())
+            .then(data => {
+                const labels = data.map(item => item.datePersian);
+                const requestsCount = data.map(item => item.requestsCount);
+                const successfulCount = data.map(item => item.successfulCount);
+                const errorCount = data.map(item => item.errorCount);
+
+                const config = {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'تعداد کل درخواست ها',
+                            data: requestsCount,
+                            borderColor: 'rgb(0,76,255)',
+                            backgroundColor: 'rgb(0, 76, 255)',
+                            tension: 0.1
+                        }, {
+                            label: 'تعداد درخواست های موفق',
+                            data: successfulCount,
+                            borderColor: 'rgb(34, 227, 34)',
+                            backgroundColor: 'rgb(34,227,34)',
+                            tension: 0.1
+                        }, {
+                            label: 'تعداد درخواست های ناموفق',
+                            data: errorCount,
+                            borderColor: 'rgb(255,0,0)',
+                            backgroundColor: 'rgb(255,0,0)',
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'تعداد درخواست دانلود از ربات در روز'
+                            }
+                        }
+                    }
+                };
+
+                const myChart = new Chart(
+                    document.getElementById('user-usages-bot'),
+                    config
+                );
+            });
+    </script>
+    <script>
+            fetch('/UsersChart/GetUserJoinedBotPerDay/')
+                .then(response => response.json())
+                .then(data => {
+                    const dates = data.map(entry => entry.datePersian);
+                    const counts = data.map(entry => entry.count);
+                    const ctx = document.getElementById('users-joined-bot').getContext('2d');
+                    const chart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: dates,
+                            datasets: [{
+                                label: 'عضو شده',
+                                data: counts,
+                                backgroundColor: 'rgb(0,0,0)',
+                                borderColor: 'rgb(172,57,81)',
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                                  legend: {
+                                    position: 'top',
+                                  },
+                                  title: {
+                                    display: true,
+                                    text: 'عضویت کاربران در ربات به ازای هر روز'
+                                  }
+                            }
+                        }
+                    });
+                });
+        </script>
+    <script>
+        fetch('/UsersChart/GetUserJoinedChannelsByBotPerDay/')
+            .then(response => response.json())
+            .then(data => {
+                const dates = data.map(entry => entry.datePersian);
+                const counts = data.map(entry => entry.count);
+                const ctx = document.getElementById('users-joined-channels').getContext('2d');
+                const chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: 'عضو شده',
+                            data: counts,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderColor: 'rgb(172,57,81)',
+                                borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                              legend: {
+                                position: 'top',
+                              },
+                              title: {
+                                display: true,
+                                text: 'کاربران عضو شده در چنل از طرف ربات'
+                              }
+                        }
+                    }
+                });
+            });
+    </script>
+    <script>
+        fetch('/UsersChart/GetUserBlockedBotPerDay/')
+            .then(response => response.json())
+            .then(data => {
+                const dates = data.map(entry => entry.datePersian);
+                const counts = data.map(entry => entry.count);
+                const ctx = document.getElementById('users-blocked-bot').getContext('2d');
+                const chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: 'بلاک کرده',
+                            data: counts,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgb(172,57,81)',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                              legend: {
+                                position: 'top',
+                              },
+                              title: {
+                                display: true,
+                                text: 'کاربرانی که ربات را بلاک کرده اند'
+                              }
+                        }
+                    }
+                });
+            });
+    </script>
+    <script>
+        fetch('/UsersChart/GetUserUnBlockedBotPerDay/')
+            .then(response => response.json())
+            .then(data => {
+                const dates = data.map(entry => entry.datePersian);
+                const counts = data.map(entry => entry.count);
+                const ctx = document.getElementById('users-unblocked-bot').getContext('2d');
+                const chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: 'آنبلاک کرده اند',
+                            data: counts,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgb(172,57,81)',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                              legend: {
+                                position: 'top',
+                              },
+                              title: {
+                                display: true,
+                                text: 'کاربرانی که ربات را آنبلاک کرده اند'
+                              }
+                        }
+                    }
+                });
+            });
+    </script>
+}

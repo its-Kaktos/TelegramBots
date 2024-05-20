@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="~/favicon.png" type="image/x-icon" asp-append-version="true">
+    <link rel="icon" href="~/favicon.png" type="image/x-icon" asp-append-version="true">
+    <!-- Main CSS-->
+    <link rel="stylesheet" type="text/css" href="~/Site/css/main.css">
+    <!-- Font-icon css-->
+    <link rel="stylesheet" type="text/css" href="~/Site/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="~/Site/css/v4-shims.min.css">
+    <title>@ViewData["Title"]</title>
+</head>
+<body style="background:url(/images/web-assets/big/auth-bg.png) no-repeat center center; background-size: auto">
+
+@RenderBody()
+
+<!-- Essential javascripts for application to work-->
+<script src="~/Site/js/jquery-3.2.1.min.js"></script>
+<script src="~/Site/js/popper.min.js"></script>
+<script src="~/Site/js/bootstrap.min.js"></script>
+<!-- The javascript plugin to display page loading on top-->
+<script src="~/Site/js/plugins/pace.min.js"></script>
+<script src="~/Site/js/main.js"></script>
+<partial name="_ValidationScriptsPartial"/>
+@await RenderSectionAsync("Scripts", false)
+</body>
+</html>

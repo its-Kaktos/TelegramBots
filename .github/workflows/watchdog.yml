@@ -1,0 +1,43 @@
+name: Build and push watchdog docker images
+
+env:
+  DOTNET_VERSION: '8.0.x'
+
+on:
+  workflow_dispatch:
+    inputs:
+      BRANCH_NAME:
+        required: true
+        description: "Branch name"
+
+jobs:
+  push-watchdog-image:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    defaults:
+      run:
+        working-directory: './src/TelegramBots.WatchDog/'
+        shell: bash
+    steps:
+      - name: Checkout requested branch
+        uses: actions/checkout@main
+        with:
+          ref:  ${{ env.BRANCH }}
+        env:
+          BRANCH: ${{ inputs.BRANCH_NAME }}
+
+      - name: 'Login to GitHub Container Registry'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 'Build and push watchdog Image'
+        run: |
+          docker build . --tag ghcr.io/its-kaktos/telegrambots-watchdog:"$IMAGE_VERSION"
+          docker push ghcr.io/its-kaktos/telegrambots-watchdog:"$IMAGE_VERSION"
+        env:
+          IMAGE_VERSION: ${{ inputs.BRANCH_NAME }}.${{ github.run_id }}

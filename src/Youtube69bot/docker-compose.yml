@@ -1,0 +1,141 @@
+version: "3.8"
+
+services:
+  youtube-bot:
+    image: ghcr.io/its-kaktos/youtube69bot:add-youtube-bot.7395986784
+    restart: always
+    environment:
+      - Serilog__Properties__ApplicationVersion=add-youtube-bot.7395986784
+      - BotConfiguration__BotToken=TOKEN
+      - BotConfiguration__BaseUrl=http://telegram-local:8081
+      - ConnectionStrings__mssql=Server=mssql,1433;Database=Youtube69bot;User Id=SA;Password=PASSWORD;TrustServerCertificate=true;
+      - ConnectionStrings__Youtube69BotMetrics=Server=mssql,1433;Database=Youtube69BotMetrics;User Id=SA;Password=PASSWORD;TrustServerCertificate=true;
+      - DOTNET_ENVIRONMENT=Production
+      - RabbitMqConfig_TelegramBotEvent__AppId=youtube69_telegram_bot
+      - RabbitMqConfig_TelegramBotEvent__ExchangeName=youtube69_bot_events
+      - RabbitMqConfig_TelegramBotEvent__QueueName=youtube69_bot_queue
+      - RabbitMqConfig_TelegramBotEvent__RoutingKey=youtube69_bot
+      - RabbitMqConfig_TelegramMessageEvent__AppId=youtube69_telegram_bot
+      - RabbitMqConfig_TelegramMessageEvent__ExchangeName=telegram_message_sender_events
+      - RabbitMqConfig_TelegramMessageEvent__QueueName=telegram_message_sender_queue
+      - RabbitMqConfig_TelegramMessageEvent__RoutingKey=telegram_message_sender_key
+      - RabbitMqConfig_YoutubeDownloaderEvent__AppId=youtube69_telegram_bot
+      - RabbitMqConfig_YoutubeDownloaderEvent__ExchangeName=youtube_dl_events
+      - RabbitMqConfig_YoutubeDownloaderEvent__QueueName=youtube_dl_queue
+      - RabbitMqConfig_YoutubeDownloaderEvent__RoutingKey=youtube_dl
+      - RabbitMqConfig_YoutubeLinkResolverEvent__AppId=youtube69_telegram_bot
+      - RabbitMqConfig_YoutubeLinkResolverEvent__ExchangeName=youtube69_link_resolver_events
+      - RabbitMqConfig_YoutubeLinkResolverEvent__QueueName=youtube69_link_resolver_queue
+      - RabbitMqConfig_YoutubeLinkResolverEvent__RoutingKey=youtube69_link_resolver
+      - RabbitMqServerConfig__ConsumerDispatchConcurrency=10
+      - RabbitMqServerConfig__PrefetchCount=100
+      - RabbitMqServerConfig__HostName=rabbitmq
+      - RabbitMqServerConfig__UserName=kaktos
+      - RabbitMqServerConfig__Password=PASSWORD
+      - RabbitMqServerConfig__Port=5672
+      - Serilog__WriteTo__Seq__Args__serverUrl=http://seq:5341
+    volumes:
+      - /home/kaktos/volumes/shared/saved-thumbnails/:/tmp/saved-thumbnails/
+    networks:
+      - base-docker-files_insta69
+
+  youtube-downloader:
+    image: ghcr.io/its-kaktos/youtube69bot-downloader:add-youtube-bot.7407994537
+    restart: always
+    networks:
+      - base-docker-files_insta69
+    environment:
+      - Serilog__Properties__ApplicationVersion=add-youtube-bot.7407994537
+      - BotConfiguration__BotToken=TOKEN
+      - BotConfiguration__BaseUrl=http://telegram-local:8081
+      - DOTNET_ENVIRONMENT=Production
+      - ConnectionStrings__Youtube69BotMetrics=Server=mssql,1433;Database=Youtube69BotMetrics;User Id=SA;Password=PASSWORD;TrustServerCertificate=true;MultipleActiveResultSets=True;
+      - ConnectionStrings__Youtube69Cache=Server=mssql,1433;Database=YoutubeCache;User Id=SA;Password=PASSWORD;TrustServerCertificate=true;
+      - RabbitMqConfig_LinkResolverEvent__AppId=youtube_downloader
+      - RabbitMqConfig_LinkResolverEvent__ExchangeName=youtube_dl_events
+      - RabbitMqConfig_LinkResolverEvent__QueueName=youtube_dl_queue
+      - RabbitMqConfig_LinkResolverEvent__RoutingKey=youtube_dl
+      - RabbitMqConfig_TelegramMessageEvent__AppId=youtube_downloader
+      - RabbitMqConfig_TelegramMessageEvent__ExchangeName=telegram_message_sender_events
+      - RabbitMqConfig_TelegramMessageEvent__QueueName=telegram_message_sender_queue
+      - RabbitMqConfig_TelegramMessageEvent__RoutingKey=telegram_message_sender_key
+      - RabbitMqServerConfig__HostName=rabbitmq
+      - RabbitMqServerConfig__UserName=kaktos
+      - RabbitMqServerConfig__Password=PASSWORD
+      - RabbitMqServerConfig__Port=5672
+      - RabbitMqServerConfig__ConsumerDispatchConcurrency=10
+      - Serilog__WriteTo__Seq__Args__serverUrl=http://seq:5341
+    volumes:
+      - /home/kaktos/volumes/shared/saved-thumbnails/:/tmp/saved-thumbnails/
+
+  youtube-link-resolver-1:
+    image: ghcr.io/its-kaktos/youtube69-link-resolver-website:0.0.11
+    restart: always
+    environment:
+      - application_version=0.0.11
+      - application_name=youtube69-link-resolver-1
+      - seq_url_port=http://seq:5341
+      - publisher_exchange_name=youtube69_bot_events
+      - publisher_routing_key=youtube69_bot
+      - publisher_queue_name=youtube69_bot_queue
+      - consumer_exchange_name=youtube69_link_resolver_events
+      - consumer_routing_key=youtube69_link_resolver
+      - consumer_queue_name=youtube69_link_resolver_queue
+      - rabbit_host=rabbitmq
+      - rabbit_username=kaktos
+      - rabbit_password=PASSWORD
+      - rabbit_port=5672
+    networks:
+      - base-docker-files_insta69
+    depends_on:
+      youtube-bot:
+        condition: service_started
+  
+  youtube-link-resolver-2:
+    image: ghcr.io/its-kaktos/youtube69-link-resolver-website:0.0.11
+    restart: always
+    environment:
+      - application_version=0.0.11
+      - application_name=youtube69-link-resolver-2
+      - seq_url_port=http://seq:5341
+      - publisher_exchange_name=youtube69_bot_events
+      - publisher_routing_key=youtube69_bot
+      - publisher_queue_name=youtube69_bot_queue
+      - consumer_exchange_name=youtube69_link_resolver_events
+      - consumer_routing_key=youtube69_link_resolver
+      - consumer_queue_name=youtube69_link_resolver_queue
+      - rabbit_host=rabbitmq
+      - rabbit_username=kaktos
+      - rabbit_password=PASSWORD
+      - rabbit_port=5672
+    networks:
+      - base-docker-files_insta69
+    depends_on:
+      youtube-bot:
+        condition: service_started
+  
+  youtube-link-resolver-3:
+    image: ghcr.io/its-kaktos/youtube69-link-resolver-website:0.0.11
+    restart: always
+    environment:
+      - application_version=0.0.11
+      - application_name=youtube69-link-resolver-3
+      - seq_url_port=http://seq:5341
+      - publisher_exchange_name=youtube69_bot_events
+      - publisher_routing_key=youtube69_bot
+      - publisher_queue_name=youtube69_bot_queue
+      - consumer_exchange_name=youtube69_link_resolver_events
+      - consumer_routing_key=youtube69_link_resolver
+      - consumer_queue_name=youtube69_link_resolver_queue
+      - rabbit_host=rabbitmq
+      - rabbit_username=kaktos
+      - rabbit_password=PASSWORD
+      - rabbit_port=5672
+    networks:
+      - base-docker-files_insta69
+    depends_on:
+      youtube-bot:
+        condition: service_started
+networks:
+  base-docker-files_insta69:
+    external: true

@@ -1,0 +1,45 @@
+﻿@model TelegramBots.Web.ViewModels.Account.LoginViewModel
+@{
+    ViewData["Title"] = "ورود";
+    Layout = "_AccountLayout";
+}
+
+<section class="login-content">
+    <div class="login-box">
+        <form class="login-form" style="position: relative; min-height: 250px;"
+              asp-controller="CustomAccount" asp-action="Login" asp-route-returnUrl="@ViewData["returnUrl"]" method="post">
+            <h3 class="login-head"><i class="fa fa-lg fa-fw fa-user"></i>ورود</h3>
+            <div asp-validation-summary="ModelOnly" class="text-danger" style="max-width: 300px;"></div>
+            @if (ViewData["Message"] != null)
+            {
+                <p class="text-info mb-3" style="max-width: 300px;">
+                    <i class="fa fa-info-circle"></i>
+                    @ViewData["Message"]
+                </p>
+            }
+            <div class="form-group">
+                <label class="control-label" asp-for="UserEmail"></label>
+                <input class="form-control" asp-for="UserEmail" autofocus>
+                <span class="text-danger" asp-validation-for="UserEmail"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="Password"></label>
+                <input class="form-control" asp-for="Password" autocomplete="current-password" autocapitalize="off">
+                <span class="text-danger" asp-validation-for="Password"></span>
+            </div>
+            <div class="form-group" style="margin-right: 7%">
+                <input class="form-check-input" asp-for="RememberMe">
+                <label asp-for="RememberMe"></label>
+            </div>
+            <div class="form-group btn-container">
+                <button class="btn btn-primary btn-block"><i class="fa fa-sign-in fa-lg fa-fw"></i>ورود</button>
+            </div>
+            <div class="form-group mt-3 mb-0">
+                <p class="semibold-text mb-0">
+                    <a asp-controller="Home" asp-action="Index"><i class="fa fa-angle-left fa-fw"></i> برگشت به صفحه اصلی</a>
+                </p>
+            </div>
+        </form>
+
+    </div>
+</section>

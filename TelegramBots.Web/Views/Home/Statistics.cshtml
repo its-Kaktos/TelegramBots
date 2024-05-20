@@ -1,0 +1,14 @@
+﻿@model TelegramBots.Web.Meditr.Home.Statistics.StatisticsDto
+@{
+    ViewData["Title"] = "آمار";
+}
+<div class="menu-container">
+    <div class="content container overflow-auto">
+        <p> تعداد کل کاربران: <b>@Model.UsersCount</b></p>
+        <p> تعداد کل کاربرانی که ربات را بلاک نکرده اند و توی چنل عضو شده اند: <b>@Model.UsersJoinedChannelsAndDidNotBlockBot</b></p>
+        <p> تعداد کل کاربرانی که توی ربات هستند و عضو چنل شده اند: <b>@Model.UsersJoinedChannelsCount</b></p>
+        <p> تعداد کاربرانی که از ربات عضو چنل شده اند: <b>@Model.UsersJoinedChannelByBot</b></p>
+        <p> تعداد کل کاربرانی که از قبل عضو چنل بودند: <b>@Model.UsersWhoWasJoinedChannelBeforeBot</b></p>
+        <p> تعداد کاربرانی که ربات رو بلاک کرده اند: <b>@Model.UsersBlockedBotCount</b></p>
+    </div>
+</div>
